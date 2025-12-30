@@ -353,6 +353,25 @@ body {
   word-break: break-word;
 }
 
+.bookingForm {
+  width: min(900px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.bookingRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+@media (max-width: 520px) {
+  .bookingRow {
+    grid-template-columns: 1fr;
+  }
+}
+
 .text {
   font-size: 15px;
   line-height: 1.6;

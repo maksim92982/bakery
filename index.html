@@ -175,6 +175,7 @@
             <option value="image">Фото</option>
             <option value="mixed">Текст + фото</option>
             <option value="map">Карта</option>
+            <option value="booking">Запись / календарь</option>
             <option value="button">Кнопка / ссылка</option>
             <option value="contacts">Контакты</option>
             <option value="divider">Разделитель</option>
@@ -208,6 +209,16 @@
           <div class="panelRow">
             <label class="label" for="addMapZoom">Зум</label>
             <input class="input" id="addMapZoom" type="number" min="1" max="18" step="1" value="16" />
+          </div>
+        </div>
+
+        <div class="panelRow panelRow--col" id="addBookingRow" hidden>
+          <div class="miniText">
+            Блок “Запись” покажет пользователю слоты по расписанию, а заявка будет отправлена администратору (например в Telegram).
+          </div>
+          <div class="panelRow">
+            <label class="label" for="addBookingTitle">Заголовок</label>
+            <input class="input" id="addBookingTitle" type="text" placeholder="Запись на приём" />
           </div>
         </div>
 

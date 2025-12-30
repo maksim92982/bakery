@@ -10,7 +10,7 @@ const SAVED_CREDS_KEY = 'bakery.admin.creds.v1';
 /**
  * @typedef {'left'|'center'|'right'} TAlign
  * @typedef {'solid'|'gradient'|'image'} TBgType
- * @typedef {'text'|'image'|'mixed'|'grid'|'map'|'button'|'contacts'|'divider'|'spacer'} TBlockType
+ * @typedef {'text'|'image'|'mixed'|'grid'|'map'|'booking'|'button'|'contacts'|'divider'|'spacer'} TBlockType
  */
 
 /**
@@ -40,6 +40,7 @@ const SAVED_CREDS_KEY = 'bakery.admin.creds.v1';
  *  image: { src: string, alt: string } | null,
  *  grid: { cols: number, rows: number, cells: Array<IBlock | null> } | null,
  *  map: { lat: number, lon: number, zoom: number } | null,
+ *  booking: { title: string, slotMinutes: number, days: Array<{ dow: number, start: string, end: string }> } | null,
  *  button: { label: string, url: string } | null,
  *  spacer: { height: number } | null,
  *  contacts: { title: string, phone: string, address: string, instagram: string } | null
@@ -165,6 +166,7 @@ const normalizeBlock = raw => {
     b.type === 'mixed' ||
     b.type === 'grid' ||
     b.type === 'map' ||
+    b.type === 'booking' ||
     b.type === 'button' ||
     b.type === 'contacts' ||
     b.type === 'divider' ||
@@ -201,6 +203,25 @@ const normalizeBlock = raw => {
       ? { lat: Number(b.map.lat), lon: Number(b.map.lon), zoom: Math.max(1, Math.min(18, Number(b.map.zoom))) }
       : null;
 
+  const booking =
+    isObject(b.booking) && typeof b.booking.title === 'string'
+      ? {
+          title: b.booking.title,
+          slotMinutes: Number.isFinite(Number(b.booking.slotMinutes)) ? Math.max(10, Number(b.booking.slotMinutes)) : 60,
+          days: Array.isArray(b.booking.days)
+            ? b.booking.days
+                .filter(d => isObject(d) && Number.isFinite(Number(d.dow)) && typeof d.start === 'string' && typeof d.end === 'string')
+                .map(d => ({ dow: Math.max(1, Math.min(7, Number(d.dow))), start: String(d.start), end: String(d.end) }))
+            : [
+                { dow: 1, start: '10:00', end: '18:00' },
+                { dow: 2, start: '10:00', end: '18:00' },
+                { dow: 3, start: '10:00', end: '18:00' },
+                { dow: 4, start: '10:00', end: '18:00' },
+                { dow: 5, start: '10:00', end: '18:00' },
+              ],
+        }
+      : null;
+
   const button =
     isObject(b.button) && typeof b.button.label === 'string' && typeof b.button.url === 'string'
       ? { label: b.button.label, url: b.button.url }
@@ -218,7 +239,7 @@ const normalizeBlock = raw => {
         }
       : null;
 
-  return { id, type, align, background, text, image, grid, map, button, spacer, contacts };
+  return { id, type, align, background, text, image, grid, map, booking, button, spacer, contacts };
 };
 
 /** @param {any} g */
@@ -301,6 +322,8 @@ const els = {
   addMapLat: /** @type {HTMLInputElement} */ ($('#addMapLat')),
   addMapLon: /** @type {HTMLInputElement} */ ($('#addMapLon')),
   addMapZoom: /** @type {HTMLInputElement} */ ($('#addMapZoom')),
+  addBookingRow: /** @type {HTMLDivElement} */ ($('#addBookingRow')),
+  addBookingTitle: /** @type {HTMLInputElement} */ ($('#addBookingTitle')),
   addButtonRow: /** @type {HTMLDivElement} */ ($('#addButtonRow')),
   addButtonLabel: /** @type {HTMLInputElement} */ ($('#addButtonLabel')),
   addButtonUrl: /** @type {HTMLInputElement} */ ($('#addButtonUrl')),
@@ -469,6 +492,7 @@ const openAddModal = index => {
   els.addMapLat.value = '';
   els.addMapLon.value = '';
   els.addMapZoom.value = '16';
+  els.addBookingTitle.value = 'Запись на приём';
   els.addButtonLabel.value = '';
   els.addButtonUrl.value = '';
   els.addContactsTitle.value = 'Контакты';
@@ -487,6 +511,7 @@ const syncAddModalUi = () => {
   els.addTextRow.hidden = !showText;
   els.addImageRow.hidden = !showImage;
   els.addMapRow.hidden = t !== 'map';
+  els.addBookingRow.hidden = t !== 'booking';
   els.addButtonRow.hidden = t !== 'button';
   els.addContactsRow.hidden = t !== 'contacts';
   els.addSpacerRow.hidden = t !== 'spacer';
@@ -531,6 +556,54 @@ const makeOsmEmbedUrl = (lat, lon, zoom) => {
   const bbox = `${left},${bottom},${right},${top}`;
   const marker = `${lat},${lon}`;
   return `https://www.openstreetmap.org/export/embed.html?bbox=${encodeURIComponent(bbox)}&layer=mapnik&marker=${encodeURIComponent(marker)}`;
+};
+
+const pad2 = n => String(n).padStart(2, '0');
+
+const formatDateISO = d => `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+
+const parseTimeToMinutes = s => {
+  const m = String(s).match(/^(\d{1,2}):(\d{2})$/);
+  if (!m) return null;
+  const hh = Number(m[1]);
+  const mm = Number(m[2]);
+  if (hh < 0 || hh > 23 || mm < 0 || mm > 59) return null;
+  return hh * 60 + mm;
+};
+
+const minutesToTime = mins => `${pad2(Math.floor(mins / 60))}:${pad2(mins % 60)}`;
+
+/** dow 1..7 (Mon..Sun) */
+const jsDowToIso = jsDow => ((jsDow + 6) % 7) + 1;
+
+/** @param {{ slotMinutes: number, days: Array<{ dow: number, start: string, end: string }> }} cfg */
+const buildSlotsForDate = (date, cfg) => {
+  const dow = jsDowToIso(date.getDay());
+  const day = cfg.days.find(d => d.dow === dow);
+  if (!day) return [];
+  const start = parseTimeToMinutes(day.start);
+  const end = parseTimeToMinutes(day.end);
+  if (start == null || end == null || end <= start) return [];
+  const step = Math.max(10, Number(cfg.slotMinutes) || 60);
+  /** @type {string[]} */
+  const out = [];
+  for (let t = start; t + step <= end; t += step) {
+    out.push(minutesToTime(t));
+  }
+  return out;
+};
+
+const postJsonAsync = async (url, body) => {
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(typeof json?.error === 'string' ? json.error : `HTTP ${res.status}`);
+  }
+  return json;
 };
 
 /** @param {ITextStyle} style */
@@ -668,6 +741,137 @@ const makeBlockContent = block => {
     }
     if (state.isAdmin) {
       content.appendChild(makeMapEditor(block));
+      content.appendChild(makeBackgroundEditor(block));
+    }
+    root.appendChild(content);
+    applyBlockBackground(root, block.background);
+    return root;
+  }
+
+  if (block.type === 'booking') {
+    const cfg = block.booking;
+    const title = document.createElement('div');
+    title.className = 'contactsTitle';
+    title.textContent = cfg?.title?.trim() ? cfg.title : 'Запись';
+    content.appendChild(title);
+
+    if (!cfg) {
+      const t = document.createElement('div');
+      t.className = 'miniText';
+      t.textContent = 'Блок записи не настроен.';
+      content.appendChild(t);
+    } else {
+      const form = document.createElement('form');
+      form.className = 'bookingForm';
+
+      const dates = document.createElement('select');
+      dates.className = 'select';
+      const now = new Date();
+      for (let i = 0; i < 14; i += 1) {
+        const d = new Date(now);
+        d.setDate(now.getDate() + i);
+        const opt = document.createElement('option');
+        opt.value = formatDateISO(d);
+        opt.textContent = opt.value;
+        dates.appendChild(opt);
+      }
+
+      const times = document.createElement('select');
+      times.className = 'select';
+
+      const refillTimes = () => {
+        times.innerHTML = '';
+        const [yy, mm, dd] = dates.value.split('-').map(Number);
+        const d = new Date(yy, mm - 1, dd);
+        const slots = buildSlotsForDate(d, cfg);
+        if (slots.length === 0) {
+          const o = document.createElement('option');
+          o.value = '';
+          o.textContent = 'Нет слотов в этот день';
+          times.appendChild(o);
+          times.disabled = true;
+          return;
+        }
+        times.disabled = false;
+        for (const s of slots) {
+          const o = document.createElement('option');
+          o.value = s;
+          o.textContent = s;
+          times.appendChild(o);
+        }
+      };
+      dates.addEventListener('change', refillTimes);
+      refillTimes();
+
+      const contact = document.createElement('input');
+      contact.className = 'input';
+      contact.type = 'text';
+      contact.placeholder = 'Телефон / email / Telegram (обязательно)';
+
+      const name = document.createElement('input');
+      name.className = 'input';
+      name.type = 'text';
+      name.placeholder = 'Имя (необязательно)';
+
+      const comment = document.createElement('textarea');
+      comment.className = 'textarea';
+      comment.rows = 3;
+      comment.placeholder = 'Комментарий (необязательно)';
+
+      const submit = document.createElement('button');
+      submit.className = 'btn';
+      submit.type = 'submit';
+      submit.textContent = 'Записаться';
+
+      const status = document.createElement('div');
+      status.className = 'miniText';
+
+      const row = document.createElement('div');
+      row.className = 'bookingRow';
+      row.append(dates, times);
+
+      form.append(row, contact, name, comment, submit, status);
+      form.addEventListener('submit', async e => {
+        e.preventDefault();
+        const c = contact.value.trim();
+        if (!c) {
+          status.textContent = 'Введите контакт (телефон/email/Telegram).';
+          return;
+        }
+        const day = dates.value;
+        const time = times.value;
+        if (!time) {
+          status.textContent = 'Выберите день со слотами.';
+          return;
+        }
+        submit.disabled = true;
+        status.textContent = 'Отправляем заявку...';
+        try {
+          await postJsonAsync('/api/booking-request', {
+            blockId: block.id,
+            title: cfg.title,
+            day,
+            time,
+            contact: c,
+            name: name.value.trim(),
+            comment: comment.value.trim(),
+            pageUrl: location.href,
+          });
+          status.textContent = 'Готово! Администратор свяжется с вами.';
+          form.reset();
+          refillTimes();
+        } catch (err) {
+          status.textContent = `Ошибка: ${err instanceof Error ? err.message : 'не удалось отправить'}`;
+        } finally {
+          submit.disabled = false;
+        }
+      });
+
+      content.appendChild(form);
+    }
+
+    if (state.isAdmin) {
+      content.appendChild(makeBookingEditor(block));
       content.appendChild(makeBackgroundEditor(block));
     }
     root.appendChild(content);
@@ -1120,6 +1324,131 @@ const makeContactsEditor = block => {
   return wrap;
 };
 
+/** @param {IBlock} block */
+const makeBookingEditor = block => {
+  const wrap = document.createElement('div');
+  wrap.className = 'panelBlock';
+  const title = document.createElement('div');
+  title.className = 'panelBlock__title';
+  title.textContent = 'Запись / календарь';
+  wrap.appendChild(title);
+
+  const row1 = document.createElement('div');
+  row1.className = 'panelRow';
+  const l1 = document.createElement('div');
+  l1.className = 'label';
+  l1.textContent = 'Заголовок';
+  const t = document.createElement('input');
+  t.className = 'input';
+  t.type = 'text';
+  t.value = block.booking?.title ?? 'Запись на приём';
+  t.addEventListener('input', () => {
+    if (!block.booking) {
+      block.booking = {
+        title: 'Запись на приём',
+        slotMinutes: 60,
+        days: [
+          { dow: 1, start: '10:00', end: '18:00' },
+          { dow: 2, start: '10:00', end: '18:00' },
+          { dow: 3, start: '10:00', end: '18:00' },
+          { dow: 4, start: '10:00', end: '18:00' },
+          { dow: 5, start: '10:00', end: '18:00' },
+        ],
+      };
+    }
+    block.booking.title = t.value;
+    saveLocal(state.content);
+    render();
+  });
+  row1.append(l1, t);
+  wrap.appendChild(row1);
+
+  const row2 = document.createElement('div');
+  row2.className = 'panelRow';
+  const l2 = document.createElement('div');
+  l2.className = 'label';
+  l2.textContent = 'Слот (мин)';
+  const slot = document.createElement('input');
+  slot.className = 'input';
+  slot.type = 'number';
+  slot.min = '10';
+  slot.step = '5';
+  slot.value = String(block.booking?.slotMinutes ?? 60);
+  slot.addEventListener('input', () => {
+    if (!block.booking) return;
+    block.booking.slotMinutes = Math.max(10, Number(slot.value || '60'));
+    saveLocal(state.content);
+    render();
+  });
+  row2.append(l2, slot);
+  wrap.appendChild(row2);
+
+  const daysWrap = document.createElement('div');
+  daysWrap.className = 'panelRow panelRow--col';
+  const cap = document.createElement('div');
+  cap.className = 'miniText';
+  cap.textContent = 'Расписание по дням недели (пустые дни — выходные).';
+  daysWrap.appendChild(cap);
+
+  const dowNames = {
+    1: 'Пн',
+    2: 'Вт',
+    3: 'Ср',
+    4: 'Чт',
+    5: 'Пт',
+    6: 'Сб',
+    7: 'Вс',
+  };
+
+  const ensureBooking = () => {
+    if (!block.booking) {
+      block.booking = { title: 'Запись на приём', slotMinutes: 60, days: [] };
+    }
+  };
+
+  for (let dow = 1; dow <= 7; dow += 1) {
+    const row = document.createElement('div');
+    row.className = 'panelRow';
+    const l = document.createElement('div');
+    l.className = 'label';
+    l.textContent = dowNames[dow];
+
+    const start = document.createElement('input');
+    start.className = 'input';
+    start.type = 'text';
+    start.placeholder = '10:00';
+    const end = document.createElement('input');
+    end.className = 'input';
+    end.type = 'text';
+    end.placeholder = '18:00';
+
+    const existing = block.booking?.days?.find(d => d.dow === dow);
+    start.value = existing?.start ?? '';
+    end.value = existing?.end ?? '';
+
+    const apply = () => {
+      ensureBooking();
+      const s = start.value.trim();
+      const e = end.value.trim();
+      block.booking.days = (block.booking.days || []).filter(d => d.dow !== dow);
+      if (s && e) {
+        block.booking.days.push({ dow, start: s, end: e });
+        block.booking.days.sort((a, b) => a.dow - b.dow);
+      }
+      saveLocal(state.content);
+      render();
+    };
+
+    start.addEventListener('change', apply);
+    end.addEventListener('change', apply);
+    row.append(l, start, end);
+    daysWrap.appendChild(row);
+  }
+
+  wrap.appendChild(daysWrap);
+  return wrap;
+};
+
 /** @param {{ cols: number, rows: number, cells: Array<IBlock | null> }} grid */
 const renderGrid = grid => {
   const wrap = document.createElement('div');
@@ -1183,6 +1512,16 @@ const renderNestedBlock = block => {
       iframe.referrerPolicy = 'no-referrer-when-downgrade';
       iframe.title = 'Карта';
       content.appendChild(iframe);
+    }
+    if (block.type === 'booking' && block.booking) {
+      const title = document.createElement('div');
+      title.className = 'contactsTitle';
+      title.textContent = block.booking.title || 'Запись';
+      content.appendChild(title);
+      const hint = document.createElement('div');
+      hint.className = 'miniText';
+      hint.textContent = 'Форма записи доступна на странице.';
+      content.appendChild(hint);
     }
     if (block.type === 'button') {
       const a = document.createElement('a');
@@ -1428,6 +1767,7 @@ const doMergeSelected = () => {
     image: null,
     grid: { cols, rows, cells },
     map: null,
+    booking: null,
     button: null,
     spacer: null,
     contacts: null,
@@ -1592,6 +1932,13 @@ const init = async () => {
         return;
       }
     }
+    if (type === 'booking') {
+      const title = els.addBookingTitle.value.trim();
+      if (!title) {
+        alert('Введите заголовок для блока записи.');
+        return;
+      }
+    }
 
     /** @type {IBlock} */
     const block = {
@@ -1605,6 +1952,20 @@ const init = async () => {
       map:
         type === 'map'
           ? { lat: Number(els.addMapLat.value), lon: Number(els.addMapLon.value), zoom: Number(els.addMapZoom.value || '16') }
+          : null,
+      booking:
+        type === 'booking'
+          ? {
+              title: els.addBookingTitle.value.trim() || 'Запись на приём',
+              slotMinutes: 60,
+              days: [
+                { dow: 1, start: '10:00', end: '18:00' },
+                { dow: 2, start: '10:00', end: '18:00' },
+                { dow: 3, start: '10:00', end: '18:00' },
+                { dow: 4, start: '10:00', end: '18:00' },
+                { dow: 5, start: '10:00', end: '18:00' },
+              ],
+            }
           : null,
       button:
         type === 'button'
