@@ -40,6 +40,7 @@
       "image": null,
       "grid": null,
       "map": null,
+      "booking": null,
       "button": null,
       "spacer": null,
       "contacts": null
@@ -60,11 +61,12 @@
       },
       "text": null,
       "image": {
-        "src": "/assets/uploads/1767096953721-0.jpg",
+        "src": "/assets/uploads/1767099219226-0.jpg",
         "alt": "6.JPG"
       },
       "grid": null,
       "map": null,
+      "booking": null,
       "button": null,
       "spacer": null,
       "contacts": null
@@ -91,6 +93,7 @@
         "lon": 30.402205,
         "zoom": 14
       },
+      "booking": null,
       "button": null,
       "spacer": null,
       "contacts": null
@@ -131,11 +134,12 @@
             },
             "text": null,
             "image": {
-              "src": "/assets/uploads/1767096953721-1.jpg",
+              "src": "/assets/uploads/1767099219226-1.jpg",
               "alt": "6.JPG"
             },
             "grid": null,
             "map": null,
+            "booking": null,
             "button": null,
             "spacer": null,
             "contacts": null
@@ -156,11 +160,12 @@
             },
             "text": null,
             "image": {
-              "src": "/assets/uploads/1767096953721-2.jpg",
+              "src": "/assets/uploads/1767099219226-2.jpg",
               "alt": "5.JPG"
             },
             "grid": null,
             "map": null,
+            "booking": null,
             "button": null,
             "spacer": null,
             "contacts": null
@@ -181,11 +186,12 @@
             },
             "text": null,
             "image": {
-              "src": "/assets/uploads/1767096953721-3.jpg",
+              "src": "/assets/uploads/1767099219226-3.jpg",
               "alt": "3.JPG"
             },
             "grid": null,
             "map": null,
+            "booking": null,
             "button": null,
             "spacer": null,
             "contacts": null
@@ -193,6 +199,60 @@
         ]
       },
       "map": null,
+      "booking": null,
+      "button": null,
+      "spacer": null,
+      "contacts": null
+    },
+    {
+      "id": "b_19b6f521b5f_dd53bf1f4dc308",
+      "type": "booking",
+      "align": "left",
+      "background": {
+        "type": "solid",
+        "solid": "#11111a",
+        "gradient": {
+          "from": "#11111a",
+          "to": "#1d1633",
+          "angle": 20
+        },
+        "imageDataUrl": null
+      },
+      "text": null,
+      "image": null,
+      "grid": null,
+      "map": null,
+      "booking": {
+        "title": "Запись на приём",
+        "slotMinutes": 60,
+        "days": [
+          {
+            "dow": 1,
+            "start": "10:00",
+            "end": "18:00"
+          },
+          {
+            "dow": 2,
+            "start": "10:00",
+            "end": "18:00"
+          },
+          {
+            "dow": 3,
+            "start": "10:00",
+            "end": "18:00"
+          },
+          {
+            "dow": 4,
+            "start": "10:00",
+            "end": "18:00"
+          },
+          {
+            "dow": 5,
+            "start": "10:00",
+            "end": "18:00"
+          }
+        ]
+      },
       "button": null,
       "spacer": null,
       "contacts": null
