@@ -1,11 +1,11 @@
 {
   "version": 1,
   "site": {
-    "title": "Булочки & Тортики",
-    "subtitle": "Домашняя выпечка на заказ",
+    "title": "foto",
+    "subtitle": "Kate.....",
     "background": {
-      "type": "gradient",
-      "solid": "#0b0b10",
+      "type": "solid",
+      "solid": "#bebeda",
       "gradient": {
         "from": "#0b0b10",
         "to": "#1b1330",
@@ -16,90 +16,7 @@
   },
   "blocks": [
     {
-      "id": "b_19b6ee3e7d0_3ac8b6562db368",
-      "type": "text",
-      "align": "center",
-      "background": {
-        "type": "solid",
-        "solid": "#c8c8df",
-        "gradient": {
-          "from": "#11111a",
-          "to": "#1d1633",
-          "angle": 20
-        },
-        "imageDataUrl": null
-      },
-      "text": {
-        "value": "пример текста",
-        "style": {
-          "bold": true,
-          "italic": true,
-          "underline": false
-        }
-      },
-      "image": null,
-      "grid": null,
-      "map": null,
-      "booking": null,
-      "button": null,
-      "spacer": null,
-      "contacts": null
-    },
-    {
-      "id": "b_19b6ee48c93_36f4fce6e3028",
-      "type": "image",
-      "align": "left",
-      "background": {
-        "type": "solid",
-        "solid": "#11111a",
-        "gradient": {
-          "from": "#11111a",
-          "to": "#1d1633",
-          "angle": 20
-        },
-        "imageDataUrl": null
-      },
-      "text": null,
-      "image": {
-        "src": "/assets/uploads/1767099219226-0.jpg",
-        "alt": "6.JPG"
-      },
-      "grid": null,
-      "map": null,
-      "booking": null,
-      "button": null,
-      "spacer": null,
-      "contacts": null
-    },
-    {
-      "id": "b_19b6f269b44_fd55b0b170813",
-      "type": "map",
-      "align": "center",
-      "background": {
-        "type": "solid",
-        "solid": "#1a1a8e",
-        "gradient": {
-          "from": "#11111a",
-          "to": "#1d1633",
-          "angle": 20
-        },
-        "imageDataUrl": null
-      },
-      "text": null,
-      "image": null,
-      "grid": null,
-      "map": {
-        "lat": 60.059926,
-        "lon": 30.402205,
-        "zoom": 14
-      },
-      "booking": null,
-      "button": null,
-      "spacer": null,
-      "contacts": null
-    },
-    {
-      "id": "b_19b6f28564e_ba8d94fb70172",
+      "id": "b_19b702a8319_c477c7fe3fc6c8",
       "type": "grid",
       "align": "left",
       "background": {
@@ -115,11 +32,11 @@
       "text": null,
       "image": null,
       "grid": {
-        "cols": 3,
+        "cols": 2,
         "rows": 1,
         "cells": [
           {
-            "id": "b_19b6f27ad48_a591d5fb9ea6b8",
+            "id": "b_19b7029648a_bea8640c70a31",
             "type": "image",
             "align": "left",
             "background": {
@@ -134,8 +51,8 @@
             },
             "text": null,
             "image": {
-              "src": "/assets/uploads/1767099219226-1.jpg",
-              "alt": "6.JPG"
+              "src": "/assets/uploads/1767113451611-0.jpg",
+              "alt": "images.jpeg"
             },
             "grid": null,
             "map": null,
@@ -145,7 +62,7 @@
             "contacts": null
           },
           {
-            "id": "b_19b6f27e205_5180a01289d22",
+            "id": "b_19b70298fe4_267c12211da26",
             "type": "image",
             "align": "left",
             "background": {
@@ -160,34 +77,8 @@
             },
             "text": null,
             "image": {
-              "src": "/assets/uploads/1767099219226-2.jpg",
-              "alt": "5.JPG"
-            },
-            "grid": null,
-            "map": null,
-            "booking": null,
-            "button": null,
-            "spacer": null,
-            "contacts": null
-          },
-          {
-            "id": "b_19b6f2805bb_96b55cc548a66",
-            "type": "image",
-            "align": "left",
-            "background": {
-              "type": "solid",
-              "solid": "#11111a",
-              "gradient": {
-                "from": "#11111a",
-                "to": "#1d1633",
-                "angle": 20
-              },
-              "imageDataUrl": null
-            },
-            "text": null,
-            "image": {
-              "src": "/assets/uploads/1767099219226-3.jpg",
-              "alt": "3.JPG"
+              "src": "/assets/uploads/1767113451611-1.jpg",
+              "alt": "6413372304.jpg"
             },
             "grid": null,
             "map": null,
@@ -205,12 +96,12 @@
       "contacts": null
     },
     {
-      "id": "b_19b6f521b5f_dd53bf1f4dc308",
-      "type": "booking",
+      "id": "b_19b7029afda_1d142b0b802288",
+      "type": "text",
       "align": "left",
       "background": {
         "type": "solid",
-        "solid": "#11111a",
+        "solid": "#ab2b7c",
         "gradient": {
           "from": "#11111a",
           "to": "#1d1633",
@@ -218,41 +109,18 @@
         },
         "imageDataUrl": null
       },
-      "text": null,
+      "text": {
+        "value": "gwegeasgegwesh",
+        "style": {
+          "bold": true,
+          "italic": false,
+          "underline": false
+        }
+      },
       "image": null,
       "grid": null,
       "map": null,
-      "booking": {
-        "title": "Запись на приём",
-        "slotMinutes": 60,
-        "days": [
-          {
-            "dow": 1,
-            "start": "10:00",
-            "end": "18:00"
-          },
-          {
-            "dow": 2,
-            "start": "10:00",
-            "end": "18:00"
-          },
-          {
-            "dow": 3,
-            "start": "10:00",
-            "end": "18:00"
-          },
-          {
-            "dow": 4,
-            "start": "10:00",
-            "end": "18:00"
-          },
-          {
-            "dow": 5,
-            "start": "10:00",
-            "end": "18:00"
-          }
-        ]
-      },
+      "booking": null,
       "button": null,
       "spacer": null,
       "contacts": null
