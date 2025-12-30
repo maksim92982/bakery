@@ -18,7 +18,7 @@
     {
       "id": "b_19b6ee3e7d0_3ac8b6562db368",
       "type": "text",
-      "align": "left",
+      "align": "center",
       "background": {
         "type": "solid",
         "solid": "#c8c8df",
@@ -38,7 +38,11 @@
         }
       },
       "image": null,
-      "grid": null
+      "grid": null,
+      "map": null,
+      "button": null,
+      "spacer": null,
+      "contacts": null
     },
     {
       "id": "b_19b6ee48c93_36f4fce6e3028",
@@ -56,10 +60,142 @@
       },
       "text": null,
       "image": {
-        "src": "/assets/uploads/1767093624678-0.jpg",
+        "src": "/assets/uploads/1767096483250-0.jpg",
         "alt": "6.JPG"
       },
-      "grid": null
+      "grid": null,
+      "map": null,
+      "button": null,
+      "spacer": null,
+      "contacts": null
+    },
+    {
+      "id": "b_19b6f269b44_fd55b0b170813",
+      "type": "map",
+      "align": "center",
+      "background": {
+        "type": "solid",
+        "solid": "#1a1a8e",
+        "gradient": {
+          "from": "#11111a",
+          "to": "#1d1633",
+          "angle": 20
+        },
+        "imageDataUrl": null
+      },
+      "text": null,
+      "image": null,
+      "grid": null,
+      "map": {
+        "lat": 60.059926,
+        "lon": 30.402205,
+        "zoom": 14
+      },
+      "button": null,
+      "spacer": null,
+      "contacts": null
+    },
+    {
+      "id": "b_19b6f28564e_ba8d94fb70172",
+      "type": "grid",
+      "align": "left",
+      "background": {
+        "type": "solid",
+        "solid": "#11111a",
+        "gradient": {
+          "from": "#11111a",
+          "to": "#1d1633",
+          "angle": 20
+        },
+        "imageDataUrl": null
+      },
+      "text": null,
+      "image": null,
+      "grid": {
+        "cols": 3,
+        "rows": 1,
+        "cells": [
+          {
+            "id": "b_19b6f27ad48_a591d5fb9ea6b8",
+            "type": "image",
+            "align": "left",
+            "background": {
+              "type": "solid",
+              "solid": "#11111a",
+              "gradient": {
+                "from": "#11111a",
+                "to": "#1d1633",
+                "angle": 20
+              },
+              "imageDataUrl": null
+            },
+            "text": null,
+            "image": {
+              "src": "/assets/uploads/1767096483988-1.jpg",
+              "alt": "6.JPG"
+            },
+            "grid": null,
+            "map": null,
+            "button": null,
+            "spacer": null,
+            "contacts": null
+          },
+          {
+            "id": "b_19b6f27e205_5180a01289d22",
+            "type": "image",
+            "align": "left",
+            "background": {
+              "type": "solid",
+              "solid": "#11111a",
+              "gradient": {
+                "from": "#11111a",
+                "to": "#1d1633",
+                "angle": 20
+              },
+              "imageDataUrl": null
+            },
+            "text": null,
+            "image": {
+              "src": "/assets/uploads/1767096484678-2.jpg",
+              "alt": "5.JPG"
+            },
+            "grid": null,
+            "map": null,
+            "button": null,
+            "spacer": null,
+            "contacts": null
+          },
+          {
+            "id": "b_19b6f2805bb_96b55cc548a66",
+            "type": "image",
+            "align": "left",
+            "background": {
+              "type": "solid",
+              "solid": "#11111a",
+              "gradient": {
+                "from": "#11111a",
+                "to": "#1d1633",
+                "angle": 20
+              },
+              "imageDataUrl": null
+            },
+            "text": null,
+            "image": {
+              "src": "/assets/uploads/1767096485420-3.jpg",
+              "alt": "3.JPG"
+            },
+            "grid": null,
+            "map": null,
+            "button": null,
+            "spacer": null,
+            "contacts": null
+          }
+        ]
+      },
+      "map": null,
+      "button": null,
+      "spacer": null,
+      "contacts": null
     }
   ]
 }
